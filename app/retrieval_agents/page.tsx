@@ -1,18 +1,25 @@
+"use client";
+
 import { ChatWindow } from "@/components/ChatWindow";
 import { GuideInfoBox } from "@/components/guide/GuideInfoBox";
+import { useState } from "react";
 
-export default function AgentsPage() {
+export default function RetrievalAgents() {
+  const [selectedProvider, setSelectedProvider] = useState("openai");
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+
   const InfoCard = (
     <GuideInfoBox>
       <ul>
-        <li className="hidden text-l md:block">
+        <li className="text-l">
           🤝
           <span className="ml-2">
-            This template showcases a{" "}
+            This template showcases retrieval agents using{" "}
             <a href="https://js.langchain.com/" target="_blank">
               LangChain.js
             </a>{" "}
-            retrieval chain and the Vercel{" "}
+            and the Vercel{" "}
             <a href="https://sdk.vercel.ai/docs" target="_blank">
               AI SDK
             </a>{" "}
@@ -24,14 +31,6 @@ export default function AgentsPage() {
           </span>
         </li>
         <li className="hidden text-l md:block">
-          🛠️
-          <span className="ml-2">
-            The agent has access to a vector store retriever as a tool as well
-            as a memory. It&apos;s particularly well suited to meta-questions
-            about the current conversation.
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
           💻
           <span className="ml-2">
             You can find the prompt and model logic for this use-case in{" "}
@@ -39,32 +38,21 @@ export default function AgentsPage() {
           </span>
         </li>
         <li>
-          🤖
+          🎛️
           <span className="ml-2">
-            By default, the agent is pretending to be a robot, but you can
-            change the prompt to whatever you want!
+            Use the settings panel to switch between different AI providers and models!
           </span>
         </li>
         <li className="hidden text-l md:block">
           🎨
           <span className="ml-2">
-            The main frontend logic is found in{" "}
-            <code>app/retrieval_agents/page.tsx</code>.
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          🔱
-          <span className="ml-2">
-            Before running this example, you&apos;ll first need to set up a
-            Supabase (or other) vector store. See the README for more details.
+            The main frontend logic is found in <code>app/retrieval_agents/page.tsx</code>.
           </span>
         </li>
         <li className="text-l">
           👇
           <span className="ml-2">
-            Upload some text, then try asking e.g.{" "}
-            <code>What are some ways of doing retrieval in LangChain?</code>{" "}
-            below!
+            Try asking e.g. <code>What is artificial intelligence?</code> below!
           </span>
         </li>
       </ul>
@@ -72,15 +60,17 @@ export default function AgentsPage() {
   );
 
   return (
-    <ChatWindow
-      endpoint="api/chat/retrieval_agents"
-      emptyStateComponent={InfoCard}
-      showIngestForm={true}
-      showIntermediateStepsToggle={true}
-      placeholder={
-        'Beep boop! I\'m a robot retrieval-focused agent! Ask, "What are some ways of doing retrieval in LangChain.js?"'
-      }
-      emoji="🤖"
-    />
+    <div className="relative h-full">
+      <ChatWindow
+        selectedProvider={selectedProvider}
+        selectedModel={selectedModel}
+        apiKeys={apiKeys}
+        emptyStateComponent={InfoCard}
+        showIngestForm={true}
+        showIntermediateStepsToggle={true}
+        placeholder="Ask me anything! I'm powered by multiple AI providers."
+        emoji="🤖"
+      />
+    </div>
   );
 }

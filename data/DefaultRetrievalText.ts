@@ -36,7 +36,7 @@ We'll have a QA app in a few lines of code.
 First, set environment variables and install packages required for the guide:
 
 \`\`\`shell
-> yarn add cheerio
+> npm install cheerio
 # Or load env vars in your preferred way:
 > export OPENAI_API_KEY="..."
 \`\`\`

@@ -1,18 +1,25 @@
+"use client";
+
 import { ChatWindow } from "@/components/ChatWindow";
 import { GuideInfoBox } from "@/components/guide/GuideInfoBox";
+import { useState } from "react";
 
-export default function AgentsPage() {
+export default function StructuredOutput() {
+  const [selectedProvider, setSelectedProvider] = useState("openai");
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+
   const InfoCard = (
     <GuideInfoBox>
       <ul>
         <li className="text-l">
-          🧱
+          🤝
           <span className="ml-2">
-            This template showcases how to output structured responses with a{" "}
+            This template showcases structured output using{" "}
             <a href="https://js.langchain.com/" target="_blank">
               LangChain.js
             </a>{" "}
-            chain and the Vercel{" "}
+            and the Vercel{" "}
             <a href="https://sdk.vercel.ai/docs" target="_blank">
               AI SDK
             </a>{" "}
@@ -23,63 +30,45 @@ export default function AgentsPage() {
             project.
           </span>
         </li>
-        <li>
-          ☎️
-          <span className="ml-2">
-            The chain formats the input schema and passes it into an OpenAI
-            Functions model, then parses the output.
-          </span>
-        </li>
         <li className="hidden text-l md:block">
           💻
           <span className="ml-2">
-            You can find the prompt, model, and schema logic for this use-case
-            in <code>app/api/chat/structured_output/route.ts</code>.
+            You can find the prompt and model logic for this use-case in{" "}
+            <code>app/api/chat/structured_output/route.ts</code>.
           </span>
         </li>
-        <li className="hidden text-l md:block">
-          📊
+        <li>
+          🎛️
           <span className="ml-2">
-            By default, the chain returns an object with <code>tone</code>,{" "}
-            <code>word_count</code>, <code>entity</code>,{" "}
-            <code>chat_response</code>, and an optional{" "}
-            <code>final_punctuation</code>, but you can change it to whatever
-            you&apos;d like!
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          💎
-          <span className="ml-2">
-            It uses a lightweight, convenient, and powerful{" "}
-            <a href="https://zod.dev/" target="_blank">
-              schema validation library called Zod
-            </a>{" "}
-            to define schemas, but you can initialize the chain with JSON schema
-            too.
+            Use the settings panel to switch between different AI providers and models!
           </span>
         </li>
         <li className="hidden text-l md:block">
           🎨
           <span className="ml-2">
-            The main frontend logic is found in{" "}
-            <code>app/structured_output/page.tsx</code>.
+            The main frontend logic is found in <code>app/structured_output/page.tsx</code>.
           </span>
         </li>
         <li className="text-l">
           👇
           <span className="ml-2">
-            Try typing e.g. <code>What a beautiful day!</code> below!
+            Try asking e.g. <code>What is artificial intelligence?</code> below!
           </span>
         </li>
       </ul>
     </GuideInfoBox>
   );
+
   return (
-    <ChatWindow
-      endpoint="api/chat/structured_output"
-      emptyStateComponent={InfoCard}
-      placeholder={`No matter what you type here, I'll always return the same JSON object with the same structure!`}
-      emoji="🧱"
-    />
+    <div className="relative h-full">
+      <ChatWindow
+        selectedProvider={selectedProvider}
+        selectedModel={selectedModel}
+        apiKeys={apiKeys}
+        emptyStateComponent={InfoCard}
+        placeholder="Ask me anything! I'm powered by multiple AI providers."
+        emoji="🤖"
+      />
+    </div>
   );
 }
