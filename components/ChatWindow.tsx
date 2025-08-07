@@ -166,8 +166,10 @@ export function ChatLayout(props: { content: ReactNode; footer: ReactNode }) {
 }
 
 export function ChatWindow(props: {
-  endpoint: string;
-  emptyStateComponent: ReactNode;
+  selectedProvider: string;
+  selectedModel: string;
+  apiKeys: Record<string, string>;
+  emptyStateComponent?: ReactNode;
   placeholder?: string;
   emoji?: string;
   showIngestForm?: boolean;
@@ -183,8 +185,16 @@ export function ChatWindow(props: {
     Record<string, any>
   >({});
 
+  // Create dynamic endpoint based on selected provider and model
+  const endpoint = `/api/chat?provider=${props.selectedProvider}&model=${props.selectedModel}`;
+
   const chat = useChat({
-    api: props.endpoint,
+    api: endpoint,
+    body: {
+      provider: props.selectedProvider,
+      model: props.selectedModel,
+      apiKey: props.apiKeys[props.selectedProvider]
+    },
     onResponse(response) {
       const sourcesHeader = response.headers.get("x-sources");
       const sources = sourcesHeader
@@ -226,10 +236,13 @@ export function ChatWindow(props: {
     });
     chat.setMessages(messagesWithUserReply);
 
-    const response = await fetch(props.endpoint, {
+    const response = await fetch(endpoint, {
       method: "POST",
       body: JSON.stringify({
         messages: messagesWithUserReply,
+        provider: props.selectedProvider,
+        model: props.selectedModel,
+        apiKey: props.apiKeys[props.selectedProvider],
         show_intermediate_steps: true,
       }),
     });

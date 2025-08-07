@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { HttpResponseOutputParser } from "langchain/output_parsers";
+import { createAIClient, createCustomAIClient, validateProviderAndModel } from "@/utils/ai-providers";
 
 export const runtime = "edge";
 
@@ -11,7 +11,7 @@ const formatMessage = (message: VercelChatMessage) => {
   return `${message.role}: ${message.content}`;
 };
 
-const TEMPLATE = `You are a pirate named Patchy. All responses must be extremely verbose and in pirate dialect.
+const TEMPLATE = `You are a helpful AI assistant. Provide clear, accurate, and helpful responses.
 
 Current conversation:
 {chat_history}
@@ -29,23 +29,46 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const messages = body.messages ?? [];
+    const provider = body.provider || 'openai';
+    const model = body.model || 'gpt-4o-mini';
+    const apiKey = body.apiKey;
+    
     const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
     const currentMessageContent = messages[messages.length - 1].content;
     const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
-    /**
-     * You can also try e.g.:
-     *
-     * import { ChatAnthropic } from "@langchain/anthropic";
-     * const model = new ChatAnthropic({});
-     *
-     * See a full list of supported models at:
-     * https://js.langchain.com/docs/modules/model_io/models/
-     */
-    const model = new ChatOpenAI({
-      temperature: 0.8,
-      model: "gpt-4o-mini",
-    });
+    // Validate provider and model
+    if (!validateProviderAndModel(provider, model)) {
+      return NextResponse.json(
+        { error: `Invalid provider or model: ${provider}/${model}` },
+        { status: 400 }
+      );
+    }
+
+    // Check if API key is provided
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: `API key is required for provider: ${provider}` },
+        { status: 400 }
+      );
+    }
+
+    let modelInstance;
+    
+    // Try to create a LangChain client first
+    try {
+      modelInstance = createAIClient(provider, model, apiKey);
+    } catch (error) {
+      // Fall back to custom client for unsupported providers
+      try {
+        modelInstance = await createCustomAIClient(provider, model, apiKey);
+      } catch (customError) {
+        return NextResponse.json(
+          { error: `Failed to create AI client: ${customError}` },
+          { status: 500 }
+        );
+      }
+    }
 
     /**
      * Chat models stream message chunks rather than bytes, so this
@@ -59,7 +82,7 @@ export async function POST(req: NextRequest) {
      * import { RunnableSequence } from "@langchain/core/runnables";
      * const chain = RunnableSequence.from([prompt, model, outputParser]);
      */
-    const chain = prompt.pipe(model).pipe(outputParser);
+    const chain = prompt.pipe(modelInstance).pipe(outputParser);
 
     const stream = await chain.stream({
       chat_history: formattedPreviousMessages.join("\n"),
