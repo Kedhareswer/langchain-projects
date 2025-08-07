@@ -1,0 +1,14 @@
+# Configuration Template for Web Article Summarizer
+# Copy this to .env and fill in your API keys
+
+# Groq API Key - Get from https://console.groq.com/
+# This is required for AI summarization
+GROQ_API_KEY=your_groq_api_key_here
+
+# EXA Search API - Get from https://exa.ai/
+# This is used for enhanced search capabilities
+EXA_API_KEY=your_exa_api_key_here
+
+# Optional: Customize the AI model
+# Available models: llama3-8b-8192, mixtral-8x7b-32768, gemma2-9b-it
+GROQ_MODEL=llama3-8b-8192 

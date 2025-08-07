@@ -1,0 +1,10 @@
+gradio
+streamlit
+python-dotenv
+newspaper3k
+langchain
+langchain-community
+langchain-groq
+requests
+lxml_html_clean
+urllib3

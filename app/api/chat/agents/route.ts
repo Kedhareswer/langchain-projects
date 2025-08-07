@@ -3,8 +3,8 @@ import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
-import { SerpAPI } from "@langchain/community/tools/serpapi";
 import { Calculator } from "@langchain/community/tools/calculator";
+import { ExaSearchTool, ExaSearchAndContentTool, ExaAnswerTool } from "../../../tools/exa-search";
 import {
   AIMessage,
   BaseMessage,
@@ -62,9 +62,9 @@ export async function POST(req: NextRequest) {
       )
       .map(convertVercelMessageToLangChainMessage);
 
-    // Requires process.env.SERPAPI_API_KEY to be set: https://serpapi.com/
-    // You can remove this or use a different tool instead.
-    const tools = [new Calculator(), new SerpAPI()];
+    // Requires process.env.EXA_API_KEY to be set: https://exa.ai/
+    // Using EXA AI for advanced web search capabilities
+    const tools = [new Calculator(), new ExaSearchTool(), new ExaAnswerTool()];
     const chat = new ChatOpenAI({
       model: "gpt-4o-mini",
       temperature: 0,

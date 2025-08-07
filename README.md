@@ -1,129 +1,379 @@
-# 🦜️🔗 LangChain + Next.js Starter Template
+# 🦜️🔗 Enhanced LangChain Projects Collection
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/langchain-ai/langchain-nextjs-template)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Flangchain-nextjs-template)
 
-This template scaffolds a LangChain.js + Next.js starter app. It showcases how to use and combine LangChain modules for several
-use cases. Specifically:
+This comprehensive repository showcases a collection of AI-powered applications built with LangChain, Next.js, and various cutting-edge technologies. It serves as both a learning resource and a practical starting point for building sophisticated AI applications.
 
-- [Simple chat](/app/api/chat/route.ts)
-- [Returning structured output from an LLM call](/app/api/chat/structured_output/route.ts)
-- [Answering complex, multi-step questions with agents](/app/api/chat/agents/route.ts)
-- [Retrieval augmented generation (RAG) with a chain and a vector store](/app/api/chat/retrieval/route.ts)
-- [Retrieval augmented generation (RAG) with an agent and a vector store](/app/api/chat/retrieval_agents/route.ts)
+## 🚀 What's Inside
 
-Most of them use Vercel's [AI SDK](https://github.com/vercel-labs/ai) to stream tokens to the client and display the incoming messages.
+This repository contains multiple interconnected projects demonstrating different AI use cases:
 
-The agents use [LangGraph.js](https://langchain-ai.github.io/langgraphjs/), LangChain's framework for building agentic workflows. They use preconfigured helper functions to minimize boilerplate, but you can replace them with custom graphs as desired.
+### 🏠 **Core Next.js Application** (`app/` directory)
+A full-featured Next.js 15 application with TypeScript showcasing multiple LangChain.js use cases:
 
-https://github.com/user-attachments/assets/e389e4e4-4fb9-4223-a4c2-dc002c8f20d3
+- **🏴‍☠️ Simple Chat** (`/` route) - Basic conversational AI with streaming responses
+- **🧱 Structured Output** (`/structured_output` route) - OpenAI Functions for structured data extraction
+- **🦜 Agents** (`/agents` route) - Tool-using agents with EXA AI search and calculator capabilities
+- **🐶 Retrieval** (`/retrieval` route) - RAG with vector store and document upload
+- **🤖 Retrieval Agents** (`/retrieval_agents` route) - Agent-based RAG with complex reasoning
+- **🌊 React Server Components** (`/ai_sdk` route) - AI SDK integration examples
+- **🕸️ LangGraph** (`/langgraph` route) - Custom LangGraph workflow examples
 
-It's free-tier friendly too! Check out the [bundle size stats below](#-bundle-size).
+**🆕 EXA AI Tools** (`app/tools/` directory):
+- **ExaSearchTool**: Neural AI-powered web search
+- **ExaSearchAndContentTool**: Search with full content retrieval
+- **ExaAnswerTool**: Direct question answering with citations
 
-You can check out a hosted version of this repo here: https://langchain-nextjs-template.vercel.app/
+### 🔍 **LangSearch Integration** (`langsearch/` directory)
+A comprehensive search API integration project:
+
+- **Web Search API**: Natural language search across billions of web documents
+- **Rerank API**: Enhanced search result accuracy with semantic reranking
+- **Python Client**: Complete API client with error handling and response validation
+- **Testing Suite**: Comprehensive API testing and debugging tools
+- **Documentation**: Complete setup and usage examples
+
+**Key Features:**
+- Free web search API with no credit card required
+- Support for natural language queries
+- Hybrid search database with semantic reranker
+- Easy integration with LLM applications
+- Comprehensive error handling and logging
+
+### 🧮 **Math Assistant** (`math_assistant/` directory)
+An interactive web application for mathematical problem solving:
+
+- **Multi-Modal Input**: Text and image-based math queries
+- **LaTeX-OCR**: Extract mathematical expressions from images using pix2tex
+- **Symbolic Computation**: Derivatives and integrals using SymPy
+- **Multiple LLM Backends**: LLaMA3 (Groq) and DeepSeek (HuggingFace)
+- **LangChain Integration**: Agent orchestration for step-by-step solutions
+- **LaTeX Rendering**: Beautiful mathematical expression display
+
+**Technologies:**
+- Streamlit for web interface
+- LangChain for agent orchestration
+- SymPy for symbolic mathematics
+- pix2tex for LaTeX OCR
+- Groq and HuggingFace for LLM backends
+
+### 📚 **Q&A Chatbot** (`Q&A_Chatbot/` directory)
+A document-based question answering system:
+
+- **PDF Processing**: Upload and process PDF documents
+- **Vector Database**: Pinecone integration for semantic search
+- **Conversational Interface**: Chat-based Q&A with document context
+- **Caching**: Optimized performance with Streamlit caching
+- **Multiple LLM Support**: Flexible backend model selection
+
+### 🌐 **Web Scraping Summarizer** (`webscraping_summarizer/` directory)
+An intelligent web content analysis tool:
+
+- **Web Scraping**: Extract content from URLs and PDFs
+- **Article Summarization**: AI-powered content summarization
+- **Search Integration**: Find relevant articles using Exa API
+- **Multi-Format Support**: HTML, PDF, and various content types
+- **Streamlit Interface**: User-friendly web application
+
+### 🔬 **Research Agent** (`research-agent/` directory)
+An autonomous academic research assistant:
+
+- **ArXiv Integration**: Search and retrieve academic papers
+- **DSPy Framework**: Advanced AI system composition
+- **Paper Summarization**: AI-powered research paper summaries
+- **Multi-LLM Support**: Groq and HuggingFace backends
+- **Academic Focus**: Specialized for research and academic work
+
+## 🛠️ Technology Stack
+
+### **Core Technologies**
+- **Next.js 15**: React framework with App Router
+- **TypeScript**: Type safety and developer experience
+- **Tailwind CSS**: Utility-first styling
+- **shadcn/ui**: Modern component library
+- **Vercel AI SDK**: Streaming AI responses
+
+### **AI/LLM Stack**
+- **LangChain.js**: AI application framework
+- **LangGraph.js**: Agent workflow orchestration
+- **OpenAI**: Primary LLM provider
+- **Supabase**: Vector database
+- **EXA AI**: Advanced AI-powered web search integration (replaces SERPAPI)
+- **Groq**: High-performance LLM inference
+- **HuggingFace**: Open-source model access
+
+### **Additional Tools**
+- **Streamlit**: Rapid web application development
+- **DSPy**: Framework for building AI systems
+- **SymPy**: Symbolic mathematics
+- **pix2tex**: LaTeX OCR
+- **Pinecone**: Vector database
+- **LangSearch**: Web search API
 
 ## 🚀 Getting Started
 
-First, clone this repo and download it locally.
+### Prerequisites
+- Node.js 18+ and Yarn
+- Python 3.8+ (for Python-based projects)
+- Various API keys (see individual project READMEs)
 
-Next, you'll need to set up environment variables in your repo's `.env.local` file. Copy the `.env.example` file to `.env.local`.
-To start with the basic examples, you'll just need to add your OpenAI API key.
+### Core Next.js Application
 
-Because this app is made to run in serverless Edge functions, make sure you've set the `LANGCHAIN_CALLBACKS_BACKGROUND` environment variable to `false` to ensure tracing finishes if you are using [LangSmith tracing](https://docs.smith.langchain.com/).
+1. **Clone and setup:**
+```bash
+git clone <repository-url>
+cd langchain-projects
+yarn install
+```
 
-Next, install the required packages using your preferred package manager (e.g. `yarn`).
+2. **Environment setup:**
+```bash
+cp .env.example .env.local
+# Add your API keys to .env.local
+```
 
-Now you're ready to run the development server:
-
+3. **Run the development server:**
 ```bash
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result! Ask the bot something and you'll see a streamed response:
+4. **Open your browser:**
+Navigate to [http://localhost:3000](http://localhost:3000)
 
-![A streaming conversation between the user and the AI](/public/images/chat-conversation.png)
+### Testing EXA AI Integration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To test the EXA AI integration:
 
-Backend logic lives in `app/api/chat/route.ts`. From here, you can change the prompt and model, or add other modules and logic.
+1. **Set up your API key:**
+   ```bash
+   echo "EXA_API_KEY=your_exa_api_key" > .env.local
+   ```
 
-## 🧱 Structured Output
+2. **Run the test:**
+   ```bash
+   npx tsx app/test-exa-integration.ts
+   ```
 
-The second example shows how to have a model return output according to a specific schema using OpenAI Functions.
-Click the `Structured Output` link in the navbar to try it out:
+3. **Test the agents endpoint:**
+   ```bash
+   curl -X POST http://localhost:3000/api/chat/agents \
+     -H "Content-Type: application/json" \
+     -d '{"messages":[{"role":"user","content":"What are the latest AI developments?"}]}'
+   ```
 
-![A streaming conversation between the user and an AI agent](/public/images/structured-output-conversation.png)
+### Python-Based Projects
 
-The chain in this example uses a [popular library called Zod](https://zod.dev) to construct a schema, then formats it in the way OpenAI expects.
-It then passes that schema as a function into OpenAI and passes a `function_call` parameter to force OpenAI to return arguments in the specified format.
-
-For more details, [check out this documentation page](https://js.langchain.com/docs/how_to/structured_output).
-
-## 🦜 Agents
-
-To try out the agent example, you'll need to give the agent access to the internet by populating the `SERPAPI_API_KEY` in `.env.local`.
-Head over to [the SERP API website](https://serpapi.com/) and get an API key if you don't already have one.
-
-You can then click the `Agent` example and try asking it more complex questions:
-
-![A streaming conversation between the user and an AI agent](/public/images/agent-conversation.png)
-
-This example uses a [prebuilt LangGraph agent](https://langchain-ai.github.io/langgraphjs/tutorials/quickstart/), but you can customize your own as well.
-
-## 🐶 Retrieval
-
-The retrieval examples both use Supabase as a vector store. However, you can swap in
-[another supported vector store](https://js.langchain.com/docs/integrations/vectorstores) if preferred by changing
-the code under `app/api/retrieval/ingest/route.ts`, `app/api/chat/retrieval/route.ts`, and `app/api/chat/retrieval_agents/route.ts`.
-
-For Supabase, follow [these instructions](https://js.langchain.com/docs/integrations/vectorstores/supabase) to set up your
-database, then get your database URL and private key and paste them into `.env.local`.
-
-You can then switch to the `Retrieval` and `Retrieval Agent` examples. The default document text is pulled from the LangChain.js retrieval
-use case docs, but you can change them to whatever text you'd like.
-
-For a given text, you'll only need to press `Upload` once. Pressing it again will re-ingest the docs, resulting in duplicates.
-You can clear your Supabase vector store by navigating to the console and running `DELETE FROM documents;`.
-
-After splitting, embedding, and uploading some text, you're ready to ask questions!
-
-For more info on retrieval chains, [see this page](https://js.langchain.com/docs/tutorials/rag).
-The specific variant of the conversational retrieval chain used here is composed using LangChain Expression Language, which you can
-[read more about here](https://js.langchain.com/docs/how_to/qa_sources/). This chain example will also return cited sources
-via header in addition to the streaming response.
-
-For more info on retrieval agents, [see this page](https://langchain-ai.github.io/langgraphjs/tutorials/rag/langgraph_agentic_rag/).
-
-## 📦 Bundle size
-
-The bundle size for LangChain itself is quite small. After compression and chunk splitting, for the RAG use case LangChain uses 37.32 KB of code space (as of [@langchain/core 0.1.15](https://npmjs.com/package/@langchain/core)), which is less than 4% of the total Vercel free tier edge function alottment of 1 MB:
-
-![](/public/images/bundle-size.png)
-
-This package has [@next/bundle-analyzer](https://www.npmjs.com/package/@next/bundle-analyzer) set up by default - you can explore the bundle size interactively by running:
+Each Python project has its own setup instructions. Navigate to the project directory and follow the README:
 
 ```bash
-$ ANALYZE=true yarn build
+# Math Assistant
+cd math_assistant
+pip install -r requirements.txt
+streamlit run app.py
+
+# Research Agent
+cd research-agent/autonomous_agent
+pip install -r requirements.txt
+streamlit run main.py
+
+# Q&A Chatbot
+cd Q&A_Chatbot
+pip install -r requirements.txt
+streamlit run app.py
+
+# Web Scraping Summarizer
+cd webscraping_summarizer
+pip install -r requirements.txt
+streamlit run app.py
 ```
 
-## 📚 Learn More
+## 🔧 Configuration
 
-The example chains in the `app/api/chat/route.ts` and `app/api/chat/retrieval/route.ts` files use
-[LangChain Expression Language](https://js.langchain.com/docs/concepts#langchain-expression-language) to
-compose different LangChain.js modules together. You can integrate other retrievers, agents, preconfigured chains, and more too, though keep in mind
-`HttpResponseOutputParser` is meant to be used directly with model output.
+### Environment Variables
 
-To learn more about what you can do with LangChain.js, check out the docs here:
+Create `.env.local` for the Next.js app and individual `.env` files for Python projects:
 
-- https://js.langchain.com/docs/
+```env
+# Core Application
+OPENAI_API_KEY=your_openai_key
+EXA_API_KEY=your_exa_api_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_PRIVATE_KEY=your_supabase_key
 
-## ▲ Deploy on Vercel
+# LangSearch
+LANGSEARCH_API_KEY=your_langsearch_key
 
-When ready, you can deploy your app on the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+# Math Assistant
+GROQ_API_KEY=your_groq_key
+HF_TOKEN=your_huggingface_token
 
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+# Research Agent
+GROQ_API_KEY=your_groq_key
+HF_MODEL_ID=google/flan-t5-large
+```
 
-## Thank You!
+### 🆕 EXA AI Integration
 
-Thanks for reading! If you have any questions or comments, reach out to us on Twitter
-[@LangChainAI](https://twitter.com/langchainai), or [click here to join our Discord server](https://discord.gg/langchain).
+This project now uses **EXA AI** for advanced web search capabilities, replacing the previous SERPAPI integration. EXA AI provides:
+
+- **Neural Search**: AI-powered search that understands context and intent
+- **Content Retrieval**: Get full text content from search results  
+- **Direct Answers**: Get grounded answers to questions with citations
+- **Autoprompt**: Automatic query optimization for better results
+
+**Setup EXA AI:**
+1. Visit [https://exa.ai](https://exa.ai) and sign up for an account
+2. Get your API key from the dashboard
+3. Add `EXA_API_KEY=your_exa_api_key` to your `.env.local` file
+
+**Available Tools:**
+- `ExaSearchTool`: Basic web search with neural capabilities
+- `ExaSearchAndContentTool`: Search with full content retrieval
+- `ExaAnswerTool`: Direct answers to questions with citations
+
+For detailed migration information, see [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).
+
+## 📊 Bundle Size
+
+The Next.js application is optimized for Vercel's free tier. LangChain uses only 37.32 KB of code space after compression, which is less than 4% of the 1 MB edge function limit.
+
+Analyze the bundle size:
+```bash
+ANALYZE=true yarn build
+```
+
+## 🎯 Use Cases Demonstrated
+
+### **Conversational AI**
+- Simple chatbots with streaming responses
+- Structured data extraction using OpenAI Functions
+- Tool-using agents with EXA AI search and calculation capabilities
+
+### **Retrieval Augmented Generation (RAG)**
+- Document-based question answering
+- Vector store integration with Supabase
+- Agent-based retrieval with complex reasoning
+- Web search integration with LangSearch
+
+### **Mathematical Computing**
+- Symbolic mathematics with SymPy
+- LaTeX OCR for image-based math input
+- Multi-LLM backend support
+- Step-by-step problem solving
+
+### **Research and Analysis**
+- Academic paper search and summarization
+- Web content scraping and analysis
+- Autonomous research workflows
+- Multi-source information synthesis
+
+### **Search and Discovery**
+- Neural AI-powered web search with EXA AI
+- Content retrieval and direct question answering
+- Semantic reranking of results
+- API integration examples
+- Comprehensive testing suites
+
+## 🚀 EXA AI Migration Benefits
+
+The migration from SERPAPI to EXA AI provides significant improvements:
+
+| Feature | Before (SERPAPI) | After (EXA AI) |
+|---------|------------------|----------------|
+| **Search Quality** | Basic keyword matching | AI-powered neural search |
+| **Content Access** | Limited snippets | Full text content |
+| **Query Understanding** | Literal matching | Context-aware understanding |
+| **Answer Generation** | No | Direct answers with citations |
+| **Query Optimization** | Manual | Automatic (autoprompt) |
+| **Result Relevance** | Variable | Consistently high |
+
+## 🏗️ Architecture Overview
+
+```mermaid
+graph TD
+    A[User Interface] --> B[Next.js App]
+    A --> C[Streamlit Apps]
+    A --> D[Python Scripts]
+    
+    B --> E[LangChain.js]
+    C --> F[LangChain Python]
+    D --> F
+    
+    E --> G[LLM Providers]
+    F --> G
+    
+    G --> H[OpenAI]
+    G --> I[Groq]
+    G --> J[HuggingFace]
+    
+    E --> K[Vector Stores]
+    F --> K
+    
+    K --> L[Supabase]
+    K --> M[Pinecone]
+    
+    E --> N[Search APIs]
+    F --> N
+    
+    N --> O[EXA AI]
+    N --> P[LangSearch]
+    N --> Q[Exa]
+```
+
+## 📚 Learning Resources
+
+### **Documentation**
+- [LangChain.js Documentation](https://js.langchain.com/docs/)
+- [LangGraph.js Tutorials](https://langchain-ai.github.io/langgraphjs/)
+- [Vercel AI SDK](https://sdk.vercel.ai/docs)
+- [Streamlit Documentation](https://docs.streamlit.io/)
+- [EXA AI Documentation](https://docs.exa.ai)
+
+### **Project-Specific Documentation**
+- [EXA AI Migration Guide](MIGRATION_GUIDE.md) - Complete migration from SERPAPI to EXA AI
+- [EXA AI Tools Documentation](app/tools/README.md) - Detailed tool usage and examples
+- [EXA AI Migration Summary](EXA_AI_MIGRATION_SUMMARY.md) - Overview of all changes
+
+### **Key Concepts**
+- **LangChain Expression Language**: Composing AI workflows
+- **Agent Architectures**: Tool-using AI systems
+- **RAG Patterns**: Retrieval augmented generation
+- **Vector Databases**: Semantic search and storage
+- **Multi-Modal AI**: Text, image, and structured data processing
+- **Neural Search**: AI-powered web search with context understanding
+
+## 🚀 Deployment
+
+### **Next.js Application**
+Deploy to Vercel with one click:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Flangchain-nextjs-template)
+
+### **Python Applications**
+Deploy Streamlit apps to:
+- [Streamlit Cloud](https://streamlit.io/cloud)
+- [Heroku](https://heroku.com/)
+- [Railway](https://railway.app/)
+- [Render](https://render.com/)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with ❤️ using LangChain, Next.js, and Streamlit
+- Inspired by the open-source AI community
+- Special thanks to LangChain AI, Vercel, and all contributors
+
+---
+
+**Note**: This enhanced repository demonstrates the power of combining multiple AI technologies to create sophisticated applications. Each project can be used independently or as part of a larger AI ecosystem.
