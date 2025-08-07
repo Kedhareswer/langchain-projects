@@ -1,85 +1,159 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChatWindow } from "@/components/ChatWindow";
+import { GuideInfoBox } from "@/components/guide/GuideInfoBox";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
+import { AI_PROVIDERS } from "@/utils/ai-providers";
 
 export default function Home() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState('openai');
-  const [selectedModel, setSelectedModel] = useState('gpt-4o-mini');
+  const [selectedProvider, setSelectedProvider] = useState("openai");
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleProviderChange = (provider: string, model: string) => {
+  // Load API keys from localStorage on mount
+  useEffect(() => {
+    const savedApiKeys = localStorage.getItem("ai-api-keys");
+    if (savedApiKeys) {
+      try {
+        setApiKeys(JSON.parse(savedApiKeys));
+      } catch (error) {
+        console.error("Failed to parse saved API keys:", error);
+      }
+    }
+
+    // Load selected provider and model
+    const savedProvider = localStorage.getItem("selected-provider");
+    const savedModel = localStorage.getItem("selected-model");
+    
+    if (savedProvider) {
+      setSelectedProvider(savedProvider);
+    }
+    
+    if (savedModel) {
+      setSelectedModel(savedModel);
+    }
+  }, []);
+
+  // Save API keys to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem("ai-api-keys", JSON.stringify(apiKeys));
+  }, [apiKeys]);
+
+  // Save selected provider and model to localStorage
+  useEffect(() => {
+    localStorage.setItem("selected-provider", selectedProvider);
+  }, [selectedProvider]);
+
+  useEffect(() => {
+    localStorage.setItem("selected-model", selectedModel);
+  }, [selectedModel]);
+
+  const handleProviderChange = (provider: string) => {
     setSelectedProvider(provider);
+    // Set the first model of the new provider
+    const providerConfig = AI_PROVIDERS.find(p => p.id === provider);
+    if (providerConfig && providerConfig.models.length > 0) {
+      setSelectedModel(providerConfig.models[0].id);
+    }
+  };
+
+  const handleModelChange = (model: string) => {
     setSelectedModel(model);
   };
 
-  const handleApiKeyChange = (provider: string, apiKey: string) => {
-    setApiKeys(prev => ({ ...prev, [provider]: apiKey }));
+  const handleApiKeyChange = (provider: string, key: string) => {
+    setApiKeys(prev => ({ ...prev, [provider]: key }));
   };
 
-  const EmptyState = () => (
-    <div className="flex flex-col items-center justify-center h-full text-center p-8">
-      <div className="max-w-md">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Welcome to Multi-Provider AI Chat
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Start a conversation with any of the supported AI providers. 
-          Configure your API keys in the settings panel.
-        </p>
-        <div className="space-y-2 text-sm text-gray-500">
-          <p>• Select your preferred AI provider and model</p>
-          <p>• Add your API keys in the settings</p>
-          <p>• Start chatting with your chosen AI</p>
-        </div>
-      </div>
-    </div>
+  const InfoCard = (
+    <GuideInfoBox>
+      <ul>
+        <li className="text-l">
+          🤝
+          <span className="ml-2">
+            This template showcases a multi-provider AI chat using{" "}
+            <a href="https://js.langchain.com/" target="_blank">
+              LangChain.js
+            </a>{" "}
+            and the Vercel{" "}
+            <a href="https://sdk.vercel.ai/docs" target="_blank">
+              AI SDK
+            </a>{" "}
+            in a{" "}
+            <a href="https://nextjs.org/" target="_blank">
+              Next.js
+            </a>{" "}
+            project.
+          </span>
+        </li>
+        <li className="hidden text-l md:block">
+          💻
+          <span className="ml-2">
+            You can find the prompt and model logic for this use-case in{" "}
+            <code>app/api/chat/route.ts</code>.
+          </span>
+        </li>
+        <li>
+          🎛️
+          <span className="ml-2">
+            Use the settings panel to switch between different AI providers and models!
+          </span>
+        </li>
+        <li className="hidden text-l md:block">
+          🎨
+          <span className="ml-2">
+            The main frontend logic is found in <code>app/page.tsx</code>.
+          </span>
+        </li>
+        <li className="text-l">
+          👇
+          <span className="ml-2">
+            Try asking e.g. <code>What is artificial intelligence?</code> below!
+          </span>
+        </li>
+      </ul>
+    </GuideInfoBox>
   );
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Multi-Provider AI Chat
-            </h1>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="flex items-center gap-2"
-            >
-              <Settings className="h-4 w-4" />
-              Settings
-            </Button>
-          </div>
-        </header>
-
-        {/* Chat Window */}
-        <div className="flex-1 overflow-hidden">
-          <ChatWindow 
-            selectedProvider={selectedProvider}
-            selectedModel={selectedModel}
-            apiKeys={apiKeys}
-            emptyStateComponent={<EmptyState />}
-            placeholder="Ask me anything..."
-          />
-        </div>
+    <div className="relative h-full">
+      {/* Settings Button */}
+      <div className="absolute top-4 right-4 z-10">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setSidebarOpen(true)}
+          className="flex items-center gap-2"
+        >
+          <Settings className="w-4 h-4" />
+          Settings
+        </Button>
       </div>
+
+      {/* Chat Window */}
+      <ChatWindow
+        selectedProvider={selectedProvider}
+        selectedModel={selectedModel}
+        apiKeys={apiKeys}
+        emptyStateComponent={InfoCard}
+        placeholder="Ask me anything! I'm powered by multiple AI providers."
+        emoji="🤖"
+      />
 
       {/* Sidebar */}
       <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+        selectedProvider={selectedProvider}
+        selectedModel={selectedModel}
+        apiKeys={apiKeys}
         onProviderChange={handleProviderChange}
+        onModelChange={handleModelChange}
         onApiKeyChange={handleApiKeyChange}
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
     </div>
   );

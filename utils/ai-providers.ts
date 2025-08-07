@@ -3,222 +3,164 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGroq } from "@langchain/groq";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
-export interface AIProviderConfig {
+export interface AIProvider {
   id: string;
   name: string;
-  description: string;
-  models: string[];
+  models: AIModel[];
   apiKeyEnv: string;
   baseUrl?: string;
-  clientClass: any;
+  client: (apiKey: string, model: string) => any;
 }
 
-export const AI_PROVIDERS: AIProviderConfig[] = [
+export interface AIModel {
+  id: string;
+  name: string;
+  provider: string;
+  maxTokens?: number;
+  contextWindow?: number;
+}
+
+export const AI_PROVIDERS: AIProvider[] = [
   {
-    id: 'openai',
-    name: 'OpenAI',
-    description: 'GPT-4, GPT-3.5, and other OpenAI models',
-    models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-    apiKeyEnv: 'OPENAI_API_KEY',
-    baseUrl: 'https://api.openai.com/v1',
-    clientClass: ChatOpenAI
+    id: "openai",
+    name: "OpenAI",
+    apiKeyEnv: "OPENAI_API_KEY",
+    models: [
+      { id: "gpt-4o", name: "GPT-4o", provider: "openai", maxTokens: 128000, contextWindow: 128000 },
+      { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai", maxTokens: 16384, contextWindow: 16384 },
+      { id: "gpt-3.5-turbo", name: "GPT-3.5 Turbo", provider: "openai", maxTokens: 4096, contextWindow: 4096 },
+    ],
+    client: (apiKey: string, model: string) => new ChatOpenAI({
+      apiKey,
+      model,
+      temperature: 0.7,
+    }),
   },
   {
-    id: 'anthropic',
-    name: 'Anthropic',
-    description: 'Claude models for advanced reasoning',
-    models: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229'],
-    apiKeyEnv: 'ANTHROPIC_API_KEY',
-    baseUrl: 'https://api.anthropic.com',
-    clientClass: ChatAnthropic
+    id: "anthropic",
+    name: "Anthropic",
+    apiKeyEnv: "ANTHROPIC_API_KEY",
+    models: [
+      { id: "claude-3-5-sonnet-20241022", name: "Claude 3.5 Sonnet", provider: "anthropic", maxTokens: 4096, contextWindow: 200000 },
+      { id: "claude-3-5-haiku-20241022", name: "Claude 3.5 Haiku", provider: "anthropic", maxTokens: 4096, contextWindow: 200000 },
+      { id: "claude-3-opus-20240229", name: "Claude 3 Opus", provider: "anthropic", maxTokens: 4096, contextWindow: 200000 },
+    ],
+    client: (apiKey: string, model: string) => new ChatAnthropic({
+      apiKey,
+      model,
+      temperature: 0.7,
+    }),
   },
   {
-    id: 'groq',
-    name: 'Groq',
-    description: 'Ultra-fast inference with open models',
-    models: ['llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma2-9b-it'],
-    apiKeyEnv: 'GROQ_API_KEY',
-    baseUrl: 'https://api.groq.com/openai/v1',
-    clientClass: ChatGroq
+    id: "groq",
+    name: "Groq",
+    apiKeyEnv: "GROQ_API_KEY",
+    models: [
+      { id: "llama3-70b-8192", name: "Llama 3 70B", provider: "groq", maxTokens: 8192, contextWindow: 8192 },
+      { id: "llama3-8b-8192", name: "Llama 3 8B", provider: "groq", maxTokens: 8192, contextWindow: 8192 },
+      { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B", provider: "groq", maxTokens: 32768, contextWindow: 32768 },
+      { id: "gemma2-9b-it", name: "Gemma 2 9B", provider: "groq", maxTokens: 8192, contextWindow: 8192 },
+    ],
+    client: (apiKey: string, model: string) => new ChatGroq({
+      apiKey,
+      model,
+      temperature: 0.7,
+    }),
   },
   {
-    id: 'google',
-    name: 'Google Gemini',
-    description: 'Google\'s multimodal AI models',
-    models: ['gemini-2.0-flash-001', 'gemini-1.5-flash', 'gemini-1.5-pro'],
-    apiKeyEnv: 'GOOGLE_API_KEY',
-    baseUrl: 'https://generativelanguage.googleapis.com',
-    clientClass: ChatGoogleGenerativeAI
+    id: "google",
+    name: "Google Gemini",
+    apiKeyEnv: "GOOGLE_API_KEY",
+    models: [
+      { id: "gemini-2.0-flash-exp", name: "Gemini 2.0 Flash", provider: "google", maxTokens: 1048576, contextWindow: 1048576 },
+      { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", provider: "google", maxTokens: 1048576, contextWindow: 1048576 },
+      { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", provider: "google", maxTokens: 1048576, contextWindow: 1048576 },
+    ],
+    client: (apiKey: string, model: string) => new ChatGoogleGenerativeAI({
+      apiKey,
+      model,
+      temperature: 0.7,
+    }),
   },
   {
-    id: 'deepseek',
-    name: 'DeepSeek',
-    description: 'Advanced reasoning and coding models',
-    models: ['deepseek-chat', 'deepseek-coder', 'deepseek-reasoner'],
-    apiKeyEnv: 'DEEPSEEK_API_KEY',
-    baseUrl: 'https://api.deepseek.com',
-    clientClass: null // Will use custom client
+    id: "deepseek",
+    name: "DeepSeek",
+    apiKeyEnv: "DEEPSEEK_API_KEY",
+    baseUrl: "https://api.deepseek.com/v1",
+    models: [
+      { id: "deepseek-chat", name: "DeepSeek Chat", provider: "deepseek", maxTokens: 32768, contextWindow: 32768 },
+      { id: "deepseek-coder", name: "DeepSeek Coder", provider: "deepseek", maxTokens: 32768, contextWindow: 32768 },
+      { id: "deepseek-reasoner", name: "DeepSeek Reasoner", provider: "deepseek", maxTokens: 32768, contextWindow: 32768 },
+    ],
+    client: (apiKey: string, model: string) => new ChatOpenAI({
+      apiKey,
+      model,
+      temperature: 0.7,
+      baseURL: "https://api.deepseek.com/v1",
+    } as any),
   },
   {
-    id: 'fireworks',
-    name: 'Fireworks AI',
-    description: 'Open source models and fine-tuned variants',
-    models: ['accounts/fireworks/models/llama-v2-7b-chat', 'accounts/fireworks/models/llama-v2-13b-chat'],
-    apiKeyEnv: 'FIREWORKS_API_KEY',
-    baseUrl: 'https://api.fireworks.ai/inference/v1',
-    clientClass: null // Will use custom client
-  }
+    id: "fireworks",
+    name: "Fireworks AI",
+    apiKeyEnv: "FIREWORKS_API_KEY",
+    baseUrl: "https://api.fireworks.ai/inference/v1",
+    models: [
+      { id: "llama-v2-7b-chat", name: "Llama v2 7B Chat", provider: "fireworks", maxTokens: 4096, contextWindow: 4096 },
+      { id: "llama-v2-13b-chat", name: "Llama v2 13B Chat", provider: "fireworks", maxTokens: 4096, contextWindow: 4096 },
+      { id: "llama-v2-70b-chat", name: "Llama v2 70B Chat", provider: "fireworks", maxTokens: 4096, contextWindow: 4096 },
+    ],
+    client: (apiKey: string, model: string) => new ChatOpenAI({
+      apiKey,
+      model,
+      temperature: 0.7,
+      baseURL: "https://api.fireworks.ai/inference/v1",
+    } as any),
+  },
 ];
 
-export function getProviderConfig(providerId: string): AIProviderConfig | undefined {
+export function getProvider(providerId: string): AIProvider | undefined {
   return AI_PROVIDERS.find(p => p.id === providerId);
 }
 
-export function createAIClient(providerId: string, model: string, apiKey?: string) {
-  const provider = getProviderConfig(providerId);
-  if (!provider) {
-    throw new Error(`Unsupported provider: ${providerId}`);
-  }
-
-  // Use provided API key or fall back to environment variable
-  const key = apiKey || process.env[provider.apiKeyEnv];
-  if (!key) {
-    throw new Error(`API key not found for provider: ${providerId}`);
-  }
-
-  // If no LangChain client is available, throw error to trigger custom client fallback
-  if (!provider.clientClass) {
-    throw new Error(`No LangChain client available for provider: ${providerId}`);
-  }
-
-  const ClientClass = provider.clientClass;
-  
-  return new ClientClass({
-    model,
-    apiKey: key,
-    temperature: 0.7,
-    ...(provider.baseUrl && { baseURL: provider.baseUrl })
-  });
+export function getModel(providerId: string, modelId: string): AIModel | undefined {
+  const provider = getProvider(providerId);
+  return provider?.models.find(m => m.id === modelId);
 }
 
-export function validateProviderAndModel(providerId: string, model: string): boolean {
-  const provider = getProviderConfig(providerId);
+export function createClient(providerId: string, modelId: string, apiKey: string) {
+  const provider = getProvider(providerId);
+  if (!provider) {
+    throw new Error(`Provider ${providerId} not found`);
+  }
+  
+  return provider.client(apiKey, modelId);
+}
+
+export function validateApiKey(providerId: string, apiKey: string): boolean {
+  if (!apiKey || apiKey.trim() === "") {
+    return false;
+  }
+  
+  const provider = getProvider(providerId);
   if (!provider) {
     return false;
   }
-  return provider.models.includes(model);
-}
-
-// Helper function to create a client for unsupported providers
-export async function createCustomAIClient(providerId: string, model: string, apiKey: string) {
-  const config = {
-    openai: { 
-      baseURL: 'https://api.openai.com/v1',
-      endpoint: '/chat/completions',
-      format: 'openai'
-    },
-    anthropic: { 
-      baseURL: 'https://api.anthropic.com',
-      endpoint: '/v1/messages',
-      format: 'anthropic'
-    },
-    groq: { 
-      baseURL: 'https://api.groq.com/openai/v1',
-      endpoint: '/chat/completions',
-      format: 'openai'
-    },
-    google: { 
-      baseURL: 'https://generativelanguage.googleapis.com',
-      endpoint: '/v1beta/models/gemini-1.5-flash:generateContent',
-      format: 'google'
-    },
-    deepseek: { 
-      baseURL: 'https://api.deepseek.com',
-      endpoint: '/v1/chat/completions',
-      format: 'openai'
-    },
-    fireworks: { 
-      baseURL: 'https://api.fireworks.ai/inference/v1',
-      endpoint: '/chat/completions',
-      format: 'openai'
-    }
-  };
-
-  const providerConfig = config[providerId as keyof typeof config];
-  if (!providerConfig) {
-    throw new Error(`Unsupported provider: ${providerId}`);
+  
+  // Basic validation based on provider
+  switch (providerId) {
+    case "openai":
+      return apiKey.startsWith("sk-");
+    case "anthropic":
+      return apiKey.startsWith("sk-ant-");
+    case "groq":
+      return apiKey.startsWith("gsk_");
+    case "google":
+      return apiKey.length > 0; // Google API keys don't have a specific prefix
+    case "deepseek":
+      return apiKey.startsWith("sk-");
+    case "fireworks":
+      return apiKey.length > 0; // Fireworks API keys don't have a specific prefix
+    default:
+      return false;
   }
-
-  return {
-    async call(messages: any[]) {
-      let requestBody;
-      let headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-
-      if (providerConfig.format === 'anthropic') {
-        // Anthropic uses a different API format
-        headers['anthropic-version'] = '2023-06-01';
-        headers['Authorization'] = `Bearer ${apiKey}`;
-        
-        requestBody = {
-          model,
-          max_tokens: 1000,
-          messages: messages.map(msg => ({
-            role: msg._getType() === "human" ? "user" : "assistant",
-            content: msg.content,
-          })),
-        };
-      } else if (providerConfig.format === 'google') {
-        // Google Gemini uses a different API format
-        headers['x-goog-api-key'] = apiKey;
-        
-        requestBody = {
-          contents: [{
-            parts: [{
-              text: messages[messages.length - 1].content
-            }]
-          }],
-          generationConfig: {
-            maxOutputTokens: 1000,
-            temperature: 0.7
-          }
-        };
-      } else {
-        // OpenAI-compatible format
-        headers['Authorization'] = `Bearer ${apiKey}`;
-        
-        requestBody = {
-          model,
-          messages: messages.map(msg => ({
-            role: msg._getType() === "human" ? "user" : "assistant",
-            content: msg.content,
-          })),
-          max_tokens: 1000,
-          temperature: 0.7,
-        };
-      }
-
-      const response = await fetch(`${providerConfig.baseURL}${providerConfig.endpoint}`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`${providerId} API error: ${response.statusText} - ${errorText}`);
-      }
-
-      const data = await response.json();
-      
-      if (providerConfig.format === 'anthropic') {
-        return { content: data.content[0].text };
-      } else if (providerConfig.format === 'google') {
-        return { content: data.candidates[0].content.parts[0].text };
-      } else {
-        return { content: data.choices[0].message.content };
-      }
-    }
-  };
 }

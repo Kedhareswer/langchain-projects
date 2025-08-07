@@ -22,7 +22,7 @@ Your multi-provider AI chat application is **fully functional** and ready to use
 
 ### 1. **Start the Application**
 ```bash
-yarn dev
+npm run dev
 ```
 The app will be available at: http://localhost:3000
 
