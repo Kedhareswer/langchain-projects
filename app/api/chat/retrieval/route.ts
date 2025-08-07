@@ -3,7 +3,7 @@ import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
 import { createClient } from "@supabase/supabase-js";
 
-import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { OpenAIEmbeddings } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { Document } from "@langchain/core/documents";
@@ -12,6 +12,7 @@ import {
   BytesOutputParser,
   StringOutputParser,
 } from "@langchain/core/output_parsers";
+import { createClient as createAIClient, getProvider, getModel } from "@/utils/ai-providers";
 
 export const runtime = "edge";
 
@@ -73,11 +74,36 @@ export async function POST(req: NextRequest) {
     const messages = body.messages ?? [];
     const previousMessages = messages.slice(0, -1);
     const currentMessageContent = messages[messages.length - 1].content;
+    const provider = body.provider || "openai";
+    const model = body.model || "gpt-4o-mini";
+    const apiKey = body.apiKey;
 
-    const model = new ChatOpenAI({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-    });
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "API key is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate provider and model
+    const providerConfig = getProvider(provider);
+    const modelConfig = getModel(provider, model);
+
+    if (!providerConfig) {
+      return NextResponse.json(
+        { error: `Provider ${provider} not found` },
+        { status: 400 }
+      );
+    }
+
+    if (!modelConfig) {
+      return NextResponse.json(
+        { error: `Model ${model} not found for provider ${provider}` },
+        { status: 400 }
+      );
+    }
+
+    const aiModel = createAIClient(provider, model, apiKey);
 
     const client = createClient(
       process.env.SUPABASE_URL!,
@@ -100,7 +126,7 @@ export async function POST(req: NextRequest) {
      */
     const standaloneQuestionChain = RunnableSequence.from([
       condenseQuestionPrompt,
-      model,
+      aiModel,
       new StringOutputParser(),
     ]);
 
@@ -131,7 +157,7 @@ export async function POST(req: NextRequest) {
         question: (input) => input.question,
       },
       answerPrompt,
-      model,
+      aiModel,
     ]);
 
     const conversationalRetrievalQAChain = RunnableSequence.from([

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { z } from "zod";
 
-import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
+import { createClient, getProvider, getModel } from "@/utils/ai-providers";
 
 export const runtime = "edge";
 
@@ -26,19 +26,57 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const messages = body.messages ?? [];
     const currentMessageContent = messages[messages.length - 1].content;
+    const provider = body.provider || "openai";
+    const model = body.model || "gpt-4o-mini";
+    const apiKey = body.apiKey;
+
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "API key is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate provider and model
+    const providerConfig = getProvider(provider);
+    const modelConfig = getModel(provider, model);
+
+    if (!providerConfig) {
+      return NextResponse.json(
+        { error: `Provider ${provider} not found` },
+        { status: 400 }
+      );
+    }
+
+    if (!modelConfig) {
+      return NextResponse.json(
+        { error: `Model ${model} not found for provider ${provider}` },
+        { status: 400 }
+      );
+    }
 
     const prompt = PromptTemplate.fromTemplate(TEMPLATE);
     /**
-     * Function calling is currently only supported with ChatOpenAI models
+     * Function calling is now supported across all major AI providers:
+     * - OpenAI (GPT-4, GPT-3.5)
+     * - Anthropic (Claude 3.5 Sonnet, Claude 3.5 Haiku)
+     * - Google Gemini (Gemini 1.5 Pro, Gemini 2.0 Flash)
+     * - Groq (Llama 3, Mixtral)
+     * - DeepSeek (DeepSeek Chat, Coder, Reasoner)
+     * - Fireworks (Llama v2 models)
      */
-    const model = new ChatOpenAI({
-      temperature: 0.8,
-      model: "gpt-4o-mini",
-    });
+    const aiModel = createClient(provider, model, apiKey);
 
     /**
      * We use Zod (https://zod.dev) to define our schema for convenience,
      * but you can pass JSON schema if desired.
+     * 
+     * Zod provides:
+     * - Type safety and validation
+     * - Automatic documentation via .describe()
+     * - Optional fields with z.optional()
+     * - Enum constraints with z.enum()
+     * - Schema composition with z.object()
      */
     const schema = z
       .object({
@@ -55,12 +93,13 @@ export async function POST(req: NextRequest) {
       .describe("Should always be used to properly format output");
 
     /**
-     * Bind schema to the OpenAI model.
+     * Bind schema to the AI model.
      * Future invocations of the returned model will always match the schema.
      *
-     * Under the hood, uses tool calling by default.
+     * This works with all supported AI providers and automatically
+     * uses the appropriate function calling method for each provider.
      */
-    const functionCallingModel = model.withStructuredOutput(schema, {
+    const functionCallingModel = aiModel.withStructuredOutput(schema, {
       name: "output_formatter",
     });
 

@@ -2,12 +2,11 @@
 
 import { ChatWindow } from "@/components/ChatWindow";
 import { GuideInfoBox } from "@/components/guide/GuideInfoBox";
-import { useState } from "react";
+import { AISettingsButton } from "@/components/AISettingsButton";
+import { useAISettings } from "@/contexts/AISettingsContext";
 
 export default function Retrieval() {
-  const [selectedProvider, setSelectedProvider] = useState("openai");
-  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
-  const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  const { selectedProvider, selectedModel, apiKeys } = useAISettings();
 
   const InfoCard = (
     <GuideInfoBox>
@@ -61,6 +60,7 @@ export default function Retrieval() {
 
   return (
     <div className="relative h-full">
+      <AISettingsButton />
       <ChatWindow
         selectedProvider={selectedProvider}
         selectedModel={selectedModel}

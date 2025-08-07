@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { ChatOpenAI } from "@langchain/openai";
 import { Calculator } from "@langchain/community/tools/calculator";
 import { ExaSearchTool, ExaSearchAndContentTool, ExaAnswerTool } from "../../../tools/exa-search";
 import {
@@ -12,6 +11,7 @@ import {
   HumanMessage,
   SystemMessage,
 } from "@langchain/core/messages";
+import { createClient, getProvider, getModel } from "@/utils/ai-providers";
 
 export const runtime = "edge";
 
@@ -42,7 +42,7 @@ const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
 const AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!`;
 
 /**
- * This handler initializes and calls an tool caling ReAct agent.
+ * This handler initializes and calls a tool calling ReAct agent.
  * See the docs for more information:
  *
  * https://langchain-ai.github.io/langgraphjs/tutorials/quickstart/
@@ -51,6 +51,35 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const returnIntermediateSteps = body.show_intermediate_steps;
+    const provider = body.provider || "openai";
+    const model = body.model || "gpt-4o-mini";
+    const apiKey = body.apiKey;
+
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "API key is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate provider and model
+    const providerConfig = getProvider(provider);
+    const modelConfig = getModel(provider, model);
+
+    if (!providerConfig) {
+      return NextResponse.json(
+        { error: `Provider ${provider} not found` },
+        { status: 400 }
+      );
+    }
+
+    if (!modelConfig) {
+      return NextResponse.json(
+        { error: `Model ${model} not found for provider ${provider}` },
+        { status: 400 }
+      );
+    }
+
     /**
      * We represent intermediate steps as system messages for display purposes,
      * but don't want them in the chat history.
@@ -65,10 +94,7 @@ export async function POST(req: NextRequest) {
     // Requires process.env.EXA_API_KEY to be set: https://exa.ai/
     // Using EXA AI for advanced web search capabilities
     const tools = [new Calculator(), new ExaSearchTool(), new ExaAnswerTool()];
-    const chat = new ChatOpenAI({
-      model: "gpt-4o-mini",
-      temperature: 0,
-    });
+    const chat = createClient(provider, model, apiKey);
 
     /**
      * Use a prebuilt LangGraph agent.
@@ -92,9 +118,9 @@ export async function POST(req: NextRequest) {
        * We do some filtering of the generated events and only stream back
        * the final response as a string.
        *
-       * For this specific type of tool calling ReAct agents with OpenAI, we can tell when
-       * the agent is ready to stream back final output when it no longer calls
-       * a tool and instead streams back content.
+       * For tool calling ReAct agents, we can tell when the agent is ready to stream back
+       * final output when it no longer calls a tool and instead streams back content.
+       * This works with all supported AI providers (OpenAI, Anthropic, Google, Groq, etc.).
        *
        * See: https://langchain-ai.github.io/langgraphjs/how-tos/stream-tokens/
        */

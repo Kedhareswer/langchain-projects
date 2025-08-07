@@ -11,9 +11,10 @@ import {
   HumanMessage,
   SystemMessage,
 } from "@langchain/core/messages";
-import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { OpenAIEmbeddings } from "@langchain/openai";
 import { createRetrieverTool } from "langchain/tools/retriever";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { createClient as createAIClient, getProvider, getModel } from "@/utils/ai-providers";
 
 export const runtime = "edge";
 
@@ -55,6 +56,35 @@ If you don't know how to answer a question, use the available tools to look up r
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const provider = body.provider || "openai";
+    const model = body.model || "gpt-4o-mini";
+    const apiKey = body.apiKey;
+
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "API key is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate provider and model
+    const providerConfig = getProvider(provider);
+    const modelConfig = getModel(provider, model);
+
+    if (!providerConfig) {
+      return NextResponse.json(
+        { error: `Provider ${provider} not found` },
+        { status: 400 }
+      );
+    }
+
+    if (!modelConfig) {
+      return NextResponse.json(
+        { error: `Model ${model} not found for provider ${provider}` },
+        { status: 400 }
+      );
+    }
+
     /**
      * We represent intermediate steps as system messages for display purposes,
      * but don't want them in the chat history.
@@ -67,10 +97,7 @@ export async function POST(req: NextRequest) {
       .map(convertVercelMessageToLangChainMessage);
     const returnIntermediateSteps = body.show_intermediate_steps;
 
-    const chatModel = new ChatOpenAI({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-    });
+    const chatModel = createAIClient(provider, model, apiKey);
 
     const client = createClient(
       process.env.SUPABASE_URL!,
