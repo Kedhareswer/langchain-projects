@@ -4,7 +4,6 @@ import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { Calculator } from "@langchain/community/tools/calculator";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
-import { DuckDuckGoSearch } from "@langchain/community/tools/duckduckgo_search";
 import { SerpAPI } from "@langchain/community/tools/serpapi";
 import { WikipediaQueryRun } from "@langchain/community/tools/wikipedia_query_run";
 import { ExaSearchTool, ExaSearchAndContentTool, ExaAnswerTool } from "../../../tools/exa-search";
@@ -55,7 +54,7 @@ const DEFAULT_AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All
 
 Tool policy to ensure a final answer:
 - For factual, current, or location-based questions (e.g., weather/time), first try exa_answer with the original question.
-- If exa_answer refuses, returns no value, or is uncertain, then call exa_search_with_content to fetch content and synthesize the answer. Use exa_search and duckduckgo_search to collect and cross-check citations when helpful.
+- If exa_answer refuses, returns no value, or is uncertain, then call exa_search_with_content to fetch content and synthesize the answer. Use exa_search to collect and cross-check citations when helpful.
 - After tool calls, ALWAYS provide a short, concrete answer to the user's question (not just commentary about results).`;
 
 /**
@@ -117,8 +116,7 @@ export async function POST(req: NextRequest) {
     if (process.env.TAVILY_API_KEY) extraTools.push(new TavilySearchResults({ maxResults: 3 }));
     if (process.env.SERPAPI_API_KEY) extraTools.push(new SerpAPI(process.env.SERPAPI_API_KEY));
     extraTools.push(new WikipediaQueryRun());
-    // Always include DuckDuckGo as a lightweight complementary search engine
-    extraTools.push(new DuckDuckGoSearch({ maxResults: 5 }));
+    // Optionally include additional lightweight search tools here if needed
 
     const tools = [
       new Calculator(),
