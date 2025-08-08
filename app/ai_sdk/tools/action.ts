@@ -1,6 +1,8 @@
 "use server";
 
 import { ChatOpenAI } from "@langchain/openai";
+import { getProvider, getModel, createClient } from "@/utils/ai-providers";
+import { useAISettings } from "@/contexts/AISettingsContext";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { createStreamableValue } from "ai/rsc";
 import { z } from "zod";
@@ -20,6 +22,9 @@ export async function executeTool(
   options?: {
     wso?: boolean;
     streamEvents?: boolean;
+    provider?: string;
+    model?: string;
+    apiKey?: string;
   },
 ) {
   "use server";
@@ -35,10 +40,11 @@ export async function executeTool(
       ["human", "{input}"],
     ]);
 
-    const llm = new ChatOpenAI({
-      model: "gpt-4o-mini",
-      temperature: 0,
-    });
+    const provider = options?.provider || process.env.DEFAULT_PROVIDER || "openai";
+    const model = options?.model || process.env.DEFAULT_MODEL || "gpt-4o-mini";
+    const apiKey = options?.apiKey || process.env.OPENAI_API_KEY || "";
+
+    const llm = createClient(provider, model, apiKey);
 
     let chain: Runnable;
 

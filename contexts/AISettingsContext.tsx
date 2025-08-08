@@ -13,6 +13,13 @@ interface AISettingsContextType {
   handleProviderChange: (provider: string) => void;
   handleModelChange: (model: string) => void;
   handleApiKeyChange: (provider: string, key: string) => void;
+  // Extra integrations
+  exaApiKey: string;
+  setExaApiKey: (key: string) => void;
+  supabaseUrl: string;
+  supabaseServiceKey: string;
+  setSupabaseUrl: (url: string) => void;
+  setSupabaseServiceKey: (key: string) => void;
 }
 
 const AISettingsContext = createContext<AISettingsContextType | undefined>(undefined);
@@ -21,6 +28,9 @@ export function AISettingsProvider({ children }: { children: ReactNode }) {
   const [selectedProvider, setSelectedProvider] = useState("openai");
   const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
   const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+  const [exaApiKey, setExaApiKey] = useState<string>("");
+  const [supabaseUrl, setSupabaseUrl] = useState<string>("");
+  const [supabaseServiceKey, setSupabaseServiceKey] = useState<string>("");
 
   // Load API keys from localStorage on mount
   useEffect(() => {
@@ -32,6 +42,14 @@ export function AISettingsProvider({ children }: { children: ReactNode }) {
         console.error("Failed to parse saved API keys:", error);
       }
     }
+
+    const savedExa = localStorage.getItem("exa-api-key");
+    if (savedExa) setExaApiKey(savedExa);
+
+    const savedSupabaseUrl = localStorage.getItem("supabase-url");
+    const savedSupabaseKey = localStorage.getItem("supabase-service-key");
+    if (savedSupabaseUrl) setSupabaseUrl(savedSupabaseUrl);
+    if (savedSupabaseKey) setSupabaseServiceKey(savedSupabaseKey);
 
     // Load selected provider and model
     const savedProvider = localStorage.getItem("selected-provider");
@@ -50,6 +68,16 @@ export function AISettingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem("ai-api-keys", JSON.stringify(apiKeys));
   }, [apiKeys]);
+
+  useEffect(() => {
+    localStorage.setItem("exa-api-key", exaApiKey);
+  }, [exaApiKey]);
+
+  useEffect(() => {
+    if (supabaseUrl) localStorage.setItem("supabase-url", supabaseUrl);
+    if (supabaseServiceKey)
+      localStorage.setItem("supabase-service-key", supabaseServiceKey);
+  }, [supabaseUrl, supabaseServiceKey]);
 
   // Save selected provider and model to localStorage
   useEffect(() => {
@@ -87,6 +115,12 @@ export function AISettingsProvider({ children }: { children: ReactNode }) {
     handleProviderChange,
     handleModelChange,
     handleApiKeyChange,
+    exaApiKey,
+    setExaApiKey,
+    supabaseUrl,
+    supabaseServiceKey,
+    setSupabaseUrl,
+    setSupabaseServiceKey,
   };
 
   return (

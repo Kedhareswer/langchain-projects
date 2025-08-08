@@ -179,11 +179,18 @@ function StatefulChatInput(props: {
 
 function ClientLanggraphPage() {
   const [threadId, setThreadId] = useQueryState("threadId");
+  const [assistantIdParam, setAssistantId] = useQueryState("assistantId");
+  const [apiUrlParam, setApiUrl] = useQueryState("apiUrl");
+
+  const resolvedAssistantId =
+    assistantIdParam ?? process.env.NEXT_PUBLIC_LANGGRAPH_ASSISTANT_ID ?? "agent";
+  const resolvedApiUrl =
+    apiUrlParam ?? process.env.NEXT_PUBLIC_LANGGRAPH_API_URL ?? "http://localhost:2024";
 
   const thread = useStream<{ messages?: Message[]; timestamp?: number }>({
-    assistantId: "agent",
-    apiUrl: "http://localhost:2024",
-    threadId,
+    assistantId: resolvedAssistantId,
+    apiUrl: resolvedApiUrl,
+    threadId: threadId ?? undefined,
 
     onThreadId: setThreadId,
     onError,
@@ -195,10 +202,6 @@ function ClientLanggraphPage() {
         thread.messages.length ? (
           <div className="flex flex-col gap-4 max-w-[768px] mx-auto mb-16">
             <div className="flex justify-between gap-2 items-center">
-              <span>Timestamp: {thread.values.timestamp}</span>
-            </div>
-
-            <div className="flex justify-between gap-2 items-center">
               <span>Thread ID: {threadId}</span>
               <Button
                 variant="outline"
@@ -207,6 +210,11 @@ function ClientLanggraphPage() {
               >
                 New thread
               </Button>
+            </div>
+
+            <div className="flex justify-between gap-2 items-center text-sm text-muted-foreground">
+              <span>Assistant: {resolvedAssistantId}</span>
+              <span>API: {resolvedApiUrl}</span>
             </div>
 
             {thread.messages.map((message, index) => {
@@ -241,10 +249,11 @@ function ClientLanggraphPage() {
           </div>
         ) : (
           <GuideInfoBox>
-            <p>
-              This example showcases connecting a LangGraph agent in a Next.js
-              project, demonstrating a web search agent.
-            </p>
+            <ul>
+              <li>This example connects to a LangGraph web search agent.</li>
+              <li>Defaults: assistant <code>{process.env.NEXT_PUBLIC_LANGGRAPH_ASSISTANT_ID || "agent"}</code>, API <code>{process.env.NEXT_PUBLIC_LANGGRAPH_API_URL || "http://localhost:2024"}</code>.</li>
+              <li>You can override with query params: <code>?assistantId=agent&apiUrl=http://localhost:2024</code>.</li>
+            </ul>
           </GuideInfoBox>
         )
       }

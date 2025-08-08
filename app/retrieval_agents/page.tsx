@@ -11,49 +11,13 @@ export default function RetrievalAgents() {
   const InfoCard = (
     <GuideInfoBox>
       <ul>
-        <li className="text-l">
-          🤝
-          <span className="ml-2">
-            This template showcases retrieval agents using{" "}
-            <a href="https://js.langchain.com/" target="_blank">
-              LangChain.js
-            </a>{" "}
-            and the Vercel{" "}
-            <a href="https://sdk.vercel.ai/docs" target="_blank">
-              AI SDK
-            </a>{" "}
-            in a{" "}
-            <a href="https://nextjs.org/" target="_blank">
-              Next.js
-            </a>{" "}
-            project.
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          💻
-          <span className="ml-2">
-            You can find the prompt and model logic for this use-case in{" "}
-            <code>app/api/chat/retrieval_agents/route.ts</code>.
-          </span>
-        </li>
-        <li>
-          🎛️
-          <span className="ml-2">
-            Use the settings panel to switch between different AI providers and models!
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          🎨
-          <span className="ml-2">
-            The main frontend logic is found in <code>app/retrieval_agents/page.tsx</code>.
-          </span>
-        </li>
-        <li className="text-l">
-          👇
-          <span className="ml-2">
-            Try asking e.g. <code>What is artificial intelligence?</code> below!
-          </span>
-        </li>
+        <li className="text-l">🤝 This template showcases a LangChain.js retrieval chain and the Vercel AI SDK in a Next.js project.</li>
+        <li className="text-l">🛠️ The agent has access to a vector store retriever as a tool as well as a memory. It's particularly well suited to meta-questions about the current conversation.</li>
+        <li className="text-l">💻 You can find the prompt and model logic for this use-case in <code>app/api/chat/retrieval_agents/route.ts</code>.</li>
+        <li className="text-l">🤖 By default, the agent is pretending to be a robot, but you can change the prompt to whatever you want!</li>
+        <li className="text-l">🎨 The main frontend logic is found in <code>app/retrieval_agents/page.tsx</code>.</li>
+        <li className="text-l">🔱 Before running this example, you'll first need to set up a Supabase (or other) vector store. See the README for more details.</li>
+        <li className="text-l">👇 Upload some text, then try asking e.g. <code>What are some ways of doing retrieval in LangChain?</code> below!</li>
       </ul>
     </GuideInfoBox>
   );
@@ -68,7 +32,7 @@ export default function RetrievalAgents() {
         emptyStateComponent={InfoCard}
         showIngestForm={true}
         showIntermediateStepsToggle={true}
-        placeholder="Ask me anything! I'm powered by multiple AI providers."
+        placeholder="Upload a doc, then ask the robot agent..."
         emoji="🤖"
         apiPath="/api/chat/retrieval_agents"
       />

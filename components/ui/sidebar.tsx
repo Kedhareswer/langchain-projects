@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Separator } from "./separator";
 import { Settings, TestTube, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { AI_PROVIDERS, getProvider, getModel, validateApiKey } from "@/utils/ai-providers";
+import { useAISettings } from "@/contexts/AISettingsContext";
 import { toast } from "sonner";
 
 interface SidebarProps {
@@ -32,6 +33,14 @@ export function Sidebar({
   onToggle,
 }: SidebarProps) {
   const [testResults, setTestResults] = useState<Record<string, boolean | "testing">>({});
+  const {
+    exaApiKey,
+    setExaApiKey,
+    supabaseUrl,
+    supabaseServiceKey,
+    setSupabaseUrl,
+    setSupabaseServiceKey,
+  } = useAISettings();
 
   const currentProvider = getProvider(selectedProvider);
   const currentModel = getModel(selectedProvider, selectedModel);
@@ -206,6 +215,94 @@ export function Sidebar({
               </div>
             </div>
           )}
+
+          <Separator />
+
+          {/* EXA Configuration */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Web Search (EXA)</h3>
+            <Label htmlFor="exa-api-key">EXA API Key</Label>
+            <div className="flex gap-2">
+              <Input
+                id="exa-api-key"
+                type="password"
+                placeholder="Enter EXA_API_KEY"
+                value={exaApiKey}
+                onChange={(e) => setExaApiKey(e.target.value)}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  if (!exaApiKey) return toast.error("Enter EXA API key first");
+                  // Lightweight ping by attempting a minimal fetch to EXA status endpoint
+                  try {
+                    const res = await fetch("https://api.exa.ai/search", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${exaApiKey}`,
+                      },
+                      body: JSON.stringify({ query: "hello", numResults: 1 }),
+                    });
+                    if (res.ok) toast.success("✅ EXA key looks valid");
+                    else toast.error("❌ EXA key test failed");
+                  } catch (e) {
+                    toast.error("❌ Network error testing EXA key");
+                  }
+                }}
+              >
+                <TestTube className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Supabase Configuration */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Supabase Vector Store</h3>
+            <Label htmlFor="supabase-url">SUPABASE_URL</Label>
+            <Input
+              id="supabase-url"
+              type="text"
+              placeholder="https://xxxxx.supabase.co"
+              value={supabaseUrl}
+              onChange={(e) => setSupabaseUrl(e.target.value)}
+            />
+            <Label htmlFor="supabase-service-key">SUPABASE_PRIVATE_KEY</Label>
+            <div className="flex gap-2">
+              <Input
+                id="supabase-service-key"
+                type="password"
+                placeholder="Enter service role key"
+                value={supabaseServiceKey}
+                onChange={(e) => setSupabaseServiceKey(e.target.value)}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  if (!supabaseUrl || !supabaseServiceKey)
+                    return toast.error("Enter Supabase URL and Private Key");
+                  try {
+                    const res = await fetch("/api/test-supabase", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ supabaseUrl, supabaseServiceKey }),
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) toast.success("✅ Supabase connection OK");
+                    else toast.error(`❌ ${data.error || "Supabase test failed"}`);
+                  } catch (e) {
+                    toast.error("❌ Network error testing Supabase");
+                  }
+                }}
+              >
+                <TestTube className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
 
           <Separator />
 

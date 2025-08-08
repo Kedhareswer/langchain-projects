@@ -1,6 +1,7 @@
 "use server";
 
 import { ChatOpenAI } from "@langchain/openai";
+import { createClient } from "@/utils/ai-providers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
@@ -17,7 +18,10 @@ export async function runAgent(input: string) {
       "hwchase17/openai-tools-agent",
     );
 
-    const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 });
+    const provider = process.env.DEFAULT_PROVIDER || "openai";
+    const model = process.env.DEFAULT_MODEL || "gpt-4o-mini";
+    const apiKey = process.env.OPENAI_API_KEY || "";
+    const llm = createClient(provider, model, apiKey);
 
     const agent = createToolCallingAgent({
       llm,

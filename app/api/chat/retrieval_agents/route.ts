@@ -42,7 +42,7 @@ const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
   }
 };
 
-const AGENT_SYSTEM_TEMPLATE = `You are a stereotypical robot named Robbie and must answer all questions like a stereotypical robot. Use lots of interjections like "BEEP" and "BOOP".
+const DEFAULT_AGENT_SYSTEM_TEMPLATE = `You are a stereotypical robot named Robbie and must answer all questions like a stereotypical robot. Use lots of interjections like "BEEP" and "BOOP".
 
 If you don't know how to answer a question, use the available tools to look up relevant information. You should particularly do this for questions about LangChain.`;
 
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
     const provider = body.provider || "openai";
     const model = body.model || "gpt-4o-mini";
     const apiKey = body.apiKey;
+    const systemPromptOverride = body.system_prompt as string | undefined;
 
     if (!apiKey) {
       return NextResponse.json(
@@ -132,7 +133,7 @@ export async function POST(req: NextRequest) {
        *
        * https://langchain-ai.github.io/langgraphjs/tutorials/quickstart/
        */
-      messageModifier: new SystemMessage(AGENT_SYSTEM_TEMPLATE),
+      messageModifier: new SystemMessage(systemPromptOverride || DEFAULT_AGENT_SYSTEM_TEMPLATE),
     });
 
     if (!returnIntermediateSteps) {

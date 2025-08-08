@@ -11,10 +11,10 @@ export class ExaSearchTool extends Tool {
 
   private exa: Exa;
 
-  constructor() {
+  constructor(apiKeyOverride?: string) {
     super();
     
-    const apiKey = process.env.EXA_API_KEY;
+    const apiKey = apiKeyOverride || process.env.EXA_API_KEY;
     if (!apiKey) {
       throw new Error("EXA_API_KEY environment variable is not set. Please set it to use the ExaSearchTool.");
     }
@@ -57,10 +57,10 @@ export class ExaSearchAndContentTool extends Tool {
 
   private exa: Exa;
 
-  constructor() {
+  constructor(apiKeyOverride?: string) {
     super();
     
-    const apiKey = process.env.EXA_API_KEY;
+    const apiKey = apiKeyOverride || process.env.EXA_API_KEY;
     if (!apiKey) {
       throw new Error("EXA_API_KEY environment variable is not set. Please set it to use the ExaSearchAndContentTool.");
     }
@@ -105,10 +105,10 @@ export class ExaAnswerTool extends Tool {
 
   private exa: Exa;
 
-  constructor() {
+  constructor(apiKeyOverride?: string) {
     super();
     
-    const apiKey = process.env.EXA_API_KEY;
+    const apiKey = apiKeyOverride || process.env.EXA_API_KEY;
     if (!apiKey) {
       throw new Error("EXA_API_KEY environment variable is not set. Please set it to use the ExaAnswerTool.");
     }
