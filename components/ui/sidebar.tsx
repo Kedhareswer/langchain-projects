@@ -235,18 +235,15 @@ export function Sidebar({
                 size="sm"
                 onClick={async () => {
                   if (!exaApiKey) return toast.error("Enter EXA API key first");
-                  // Lightweight ping by attempting a minimal fetch to EXA status endpoint
                   try {
-                    const res = await fetch("https://api.exa.ai/search", {
+                    const res = await fetch("/api/test-exa", {
                       method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${exaApiKey}`,
-                      },
-                      body: JSON.stringify({ query: "hello", numResults: 1 }),
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ exaApiKey }),
                     });
-                    if (res.ok) toast.success("✅ EXA key looks valid");
-                    else toast.error("❌ EXA key test failed");
+                    const data = await res.json();
+                    if (res.ok && data.success) toast.success("✅ EXA key looks valid");
+                    else toast.error(`❌ ${data.error || "EXA key test failed"}`);
                   } catch (e) {
                     toast.error("❌ Network error testing EXA key");
                   }
