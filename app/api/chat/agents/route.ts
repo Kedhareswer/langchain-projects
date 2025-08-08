@@ -15,6 +15,14 @@ import {
   SystemMessage,
 } from "@langchain/core/messages";
 import { createClient, getProvider, getModel } from "@/utils/ai-providers";
+import {
+  OpenMeteoWeatherTool,
+  WorldTimeTool,
+  ExchangeRateTool,
+  CryptoPriceTool,
+  ArxivSearchTool,
+  HackerNewsSearchTool,
+} from "@/app/tools/real-tools";
 
 export const runtime = "edge";
 
@@ -115,6 +123,13 @@ export async function POST(req: NextRequest) {
       new ExaSearchAndContentTool(exaKey),
       new ExaAnswerTool(exaKey),
       ...extraTools,
+      // Real public tools
+      new OpenMeteoWeatherTool(),
+      new WorldTimeTool(),
+      new ExchangeRateTool(),
+      new CryptoPriceTool(process.env.COINGECKO_DEMO_API_KEY),
+      new ArxivSearchTool(),
+      new HackerNewsSearchTool(),
     ];
     const chat = createClient(provider, model, apiKey);
 
