@@ -30,7 +30,7 @@ export default function Agents() {
         apiKeys={apiKeys}
         emptyStateComponent={InfoCard}
         placeholder="Ask an agent with tools..."
-        emoji="🤖"
+        emoji="🦜"
         showIntermediateStepsToggle={true}
         apiPath="/api/chat/agents"
         systemPrompt={"You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!"}
