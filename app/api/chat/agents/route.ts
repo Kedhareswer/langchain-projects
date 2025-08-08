@@ -3,6 +3,9 @@ import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { Calculator } from "@langchain/community/tools/calculator";
+import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+import { SerpAPI } from "@langchain/community/tools/serpapi";
+import { WikipediaQueryRun } from "@langchain/community/tools/wikipedia_query_run";
 import { ExaSearchTool, ExaSearchAndContentTool, ExaAnswerTool } from "../../../tools/exa-search";
 import {
   AIMessage,
@@ -100,11 +103,18 @@ export async function POST(req: NextRequest) {
 
     // EXA AI for web search; allow runtime override from client body
     const exaKey = (body.exaApiKey as string | undefined) || process.env.EXA_API_KEY;
+    const extraTools = [] as any[];
+    // Optional: include Tavily/Serp/Wikipedia if keys are present
+    if (process.env.TAVILY_API_KEY) extraTools.push(new TavilySearchResults({ maxResults: 3 }));
+    if (process.env.SERPAPI_API_KEY) extraTools.push(new SerpAPI(process.env.SERPAPI_API_KEY));
+    extraTools.push(new WikipediaQueryRun());
+
     const tools = [
       new Calculator(),
       new ExaSearchTool(exaKey),
       new ExaSearchAndContentTool(exaKey),
       new ExaAnswerTool(exaKey),
+      ...extraTools,
     ];
     const chat = createClient(provider, model, apiKey);
 
