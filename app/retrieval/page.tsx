@@ -69,6 +69,7 @@ export default function Retrieval() {
         showIngestForm={true}
         placeholder="Ask me anything! I'm powered by multiple AI providers."
         emoji="🤖"
+        apiPath="/api/chat/retrieval"
       />
     </div>
   );

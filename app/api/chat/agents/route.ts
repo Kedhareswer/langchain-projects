@@ -39,7 +39,7 @@ const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
   }
 };
 
-const AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!`;
+const DEFAULT_AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!`;
 
 /**
  * This handler initializes and calls a tool calling ReAct agent.
@@ -51,6 +51,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const returnIntermediateSteps = body.show_intermediate_steps;
+    const systemPromptOverride = body.system_prompt as string | undefined;
+    const threadId = body.thread_id as string | undefined;
     const provider = body.provider || "openai";
     const model = body.model || "gpt-4o-mini";
     const apiKey = body.apiKey;
@@ -108,7 +110,7 @@ export async function POST(req: NextRequest) {
        *
        * https://langchain-ai.github.io/langgraphjs/tutorials/quickstart/
        */
-      messageModifier: new SystemMessage(AGENT_SYSTEM_TEMPLATE),
+      messageModifier: new SystemMessage(systemPromptOverride || DEFAULT_AGENT_SYSTEM_TEMPLATE),
     });
 
     if (!returnIntermediateSteps) {

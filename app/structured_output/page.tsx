@@ -11,49 +11,13 @@ export default function StructuredOutput() {
   const InfoCard = (
     <GuideInfoBox>
       <ul>
-        <li className="text-l">
-          🤝
-          <span className="ml-2">
-            This template showcases structured output using{" "}
-            <a href="https://js.langchain.com/" target="_blank">
-              LangChain.js
-            </a>{" "}
-            and the Vercel{" "}
-            <a href="https://sdk.vercel.ai/docs" target="_blank">
-              AI SDK
-            </a>{" "}
-            in a{" "}
-            <a href="https://nextjs.org/" target="_blank">
-              Next.js
-            </a>{" "}
-            project.
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          💻
-          <span className="ml-2">
-            You can find the prompt and model logic for this use-case in{" "}
-            <code>app/api/chat/structured_output/route.ts</code>.
-          </span>
-        </li>
-        <li>
-          🎛️
-          <span className="ml-2">
-            Use the settings panel to switch between different AI providers and models!
-          </span>
-        </li>
-        <li className="hidden text-l md:block">
-          🎨
-          <span className="ml-2">
-            The main frontend logic is found in <code>app/structured_output/page.tsx</code>.
-          </span>
-        </li>
-        <li className="text-l">
-          👇
-          <span className="ml-2">
-            Try asking e.g. <code>What is artificial intelligence?</code> below!
-          </span>
-        </li>
+        <li className="text-l">🧱 This template showcases how to output structured responses with a LangChain.js chain and the Vercel AI SDK in a Next.js project.</li>
+        <li className="text-l">☎️ The chain formats the input schema and passes it into an OpenAI Functions model, then parses the output.</li>
+        <li className="text-l">💻 You can find the prompt, model, and schema logic for this use-case in <code>app/api/chat/structured_output/route.ts</code>.</li>
+        <li className="text-l">📊 By default, the chain returns an object with <code>tone</code>, <code>word_count</code>, <code>entity</code>, <code>chat_response</code>, and an optional <code>final_punctuation</code>, but you can change it to whatever you'd like!</li>
+        <li className="text-l">💎 It uses a lightweight, convenient, and powerful schema validation library called Zod to define schemas, but you can initialize the chain with JSON schema too.</li>
+        <li className="text-l">🎨 The main frontend logic is found in <code>app/structured_output/page.tsx</code>.</li>
+        <li className="text-l">👇 Try typing e.g. <code>What a beautiful day!</code> below!</li>
       </ul>
     </GuideInfoBox>
   );
@@ -66,8 +30,10 @@ export default function StructuredOutput() {
         selectedModel={selectedModel}
         apiKeys={apiKeys}
         emptyStateComponent={InfoCard}
-        placeholder="Ask me anything! I'm powered by multiple AI providers."
+        placeholder="Type something like: What a beautiful day!"
         emoji="🤖"
+        apiPath="/api/chat/structured_output"
+        responseType="json"
       />
     </div>
   );

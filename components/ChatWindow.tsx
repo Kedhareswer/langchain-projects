@@ -174,6 +174,10 @@ export function ChatWindow(props: {
   emoji?: string;
   showIngestForm?: boolean;
   showIntermediateStepsToggle?: boolean;
+  apiPath?: string;
+  responseType?: "text" | "json";
+  threadId?: string;
+  systemPrompt?: string;
 }) {
   const [showIntermediateSteps, setShowIntermediateSteps] = useState(
     !!props.showIntermediateStepsToggle,
@@ -186,14 +190,17 @@ export function ChatWindow(props: {
   >({});
 
   // Create dynamic endpoint based on selected provider and model
-  const endpoint = `/api/chat?provider=${props.selectedProvider}&model=${props.selectedModel}`;
+  const basePath = props.apiPath ?? "/api/chat";
+  const endpoint = `${basePath}?provider=${props.selectedProvider}&model=${props.selectedModel}`;
 
   const chat = useChat({
     api: endpoint,
     body: {
       provider: props.selectedProvider,
       model: props.selectedModel,
-      apiKey: props.apiKeys[props.selectedProvider]
+      apiKey: props.apiKeys[props.selectedProvider],
+      thread_id: props.threadId,
+      system_prompt: props.systemPrompt,
     },
     onResponse(response) {
       const sourcesHeader = response.headers.get("x-sources");
@@ -220,6 +227,49 @@ export function ChatWindow(props: {
     e.preventDefault();
     if (chat.isLoading || intermediateStepsLoading) return;
 
+    // Handle non-streaming JSON responses (e.g., structured output)
+    if (props.responseType === "json") {
+      chat.setInput("");
+      const messagesWithUserReply = chat.messages.concat({
+        id: chat.messages.length.toString(),
+        content: chat.input,
+        role: "user",
+      });
+      chat.setMessages(messagesWithUserReply);
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: messagesWithUserReply,
+          provider: props.selectedProvider,
+          model: props.selectedModel,
+          apiKey: props.apiKeys[props.selectedProvider],
+          thread_id: props.threadId,
+          system_prompt: props.systemPrompt,
+        }),
+      });
+
+      const json = await response.json();
+      if (!response.ok) {
+        toast.error(`Error while processing your request`, {
+          description: json.error,
+        });
+        return;
+      }
+
+      const rendered = JSON.stringify(json, null, 2);
+      chat.setMessages([
+        ...messagesWithUserReply,
+        {
+          id: (messagesWithUserReply.length).toString(),
+          content: rendered,
+          role: "assistant",
+        },
+      ]);
+      return;
+    }
+
     if (!showIntermediateSteps) {
       chat.handleSubmit(e);
       return;
@@ -244,6 +294,8 @@ export function ChatWindow(props: {
         model: props.selectedModel,
         apiKey: props.apiKeys[props.selectedProvider],
         show_intermediate_steps: true,
+        thread_id: props.threadId,
+        system_prompt: props.systemPrompt,
       }),
     });
     const json = await response.json();
