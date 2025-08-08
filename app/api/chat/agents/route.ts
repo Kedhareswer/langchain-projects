@@ -93,9 +93,13 @@ export async function POST(req: NextRequest) {
       )
       .map(convertVercelMessageToLangChainMessage);
 
-    // Requires process.env.EXA_API_KEY to be set: https://exa.ai/
-    // Using EXA AI for advanced web search capabilities
-    const tools = [new Calculator(), new ExaSearchTool(), new ExaAnswerTool()];
+    // EXA AI for web search; allow runtime override from client body
+    const exaKey = (body.exaApiKey as string | undefined) || process.env.EXA_API_KEY;
+    const tools = [
+      new Calculator(),
+      new ExaSearchTool(exaKey),
+      new ExaAnswerTool(exaKey),
+    ];
     const chat = createClient(provider, model, apiKey);
 
     /**

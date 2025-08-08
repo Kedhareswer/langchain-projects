@@ -178,6 +178,7 @@ export function ChatWindow(props: {
   responseType?: "text" | "json";
   threadId?: string;
   systemPrompt?: string;
+  exaApiKey?: string;
 }) {
   const [showIntermediateSteps, setShowIntermediateSteps] = useState(
     !!props.showIntermediateStepsToggle,
@@ -201,6 +202,7 @@ export function ChatWindow(props: {
       apiKey: props.apiKeys[props.selectedProvider],
       thread_id: props.threadId,
       system_prompt: props.systemPrompt,
+      exaApiKey: props.exaApiKey,
     },
     onResponse(response) {
       const sourcesHeader = response.headers.get("x-sources");
@@ -247,6 +249,7 @@ export function ChatWindow(props: {
           apiKey: props.apiKeys[props.selectedProvider],
           thread_id: props.threadId,
           system_prompt: props.systemPrompt,
+          exaApiKey: props.exaApiKey,
         }),
       });
 
@@ -296,6 +299,7 @@ export function ChatWindow(props: {
         show_intermediate_steps: true,
         thread_id: props.threadId,
         system_prompt: props.systemPrompt,
+        exaApiKey: props.exaApiKey,
       }),
     });
     const json = await response.json();

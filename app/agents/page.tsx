@@ -6,7 +6,7 @@ import { AISettingsButton } from "@/components/AISettingsButton";
 import { useAISettings } from "@/contexts/AISettingsContext";
 
 export default function Agents() {
-  const { selectedProvider, selectedModel, apiKeys } = useAISettings();
+  const { selectedProvider, selectedModel, apiKeys, exaApiKey } = useAISettings();
 
   const InfoCard = (
     <GuideInfoBox>
@@ -34,6 +34,7 @@ export default function Agents() {
         showIntermediateStepsToggle={true}
         apiPath="/api/chat/agents"
         systemPrompt={"You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!"}
+        exaApiKey={exaApiKey}
       />
     </div>
   );
