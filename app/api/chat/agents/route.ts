@@ -41,10 +41,10 @@ const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
 
 const DEFAULT_AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!
 
-Follow these tool-usage rules before answering:
-- When the user asks a factual, current, or location-based question (e.g., weather), first call the exa_answer tool with the user's question to retrieve a direct answer.
-- If additional context is needed, you may use exa_search to gather sources, then produce a concise final answer.
-- Always produce a concrete final answer to the user's question after tool calls. Do not stop after acknowledging results.`;
+Tool policy to ensure a final answer:
+- For factual, current, or location-based questions (e.g., weather/time), first try exa_answer with the original question.
+- If exa_answer refuses, returns no value, or is uncertain, then call exa_search_with_content to fetch content and synthesize the answer. Use exa_search for extra citations when helpful.
+- After tool calls, ALWAYS provide a short, concrete answer to the user's question (not just commentary about results).`;
 
 /**
  * This handler initializes and calls a tool calling ReAct agent.
@@ -103,6 +103,7 @@ export async function POST(req: NextRequest) {
     const tools = [
       new Calculator(),
       new ExaSearchTool(exaKey),
+      new ExaSearchAndContentTool(exaKey),
       new ExaAnswerTool(exaKey),
     ];
     const chat = createClient(provider, model, apiKey);
